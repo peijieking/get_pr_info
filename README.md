@@ -1,3 +1,4 @@
+实现从 github 获取 pull requests 信息的网页应用。
 # 要求
 包含一个输入框,让我输入git hub repo的地址
 一个按钮,点击后可以开始执行获取
