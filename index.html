@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub PR 信息获取工具</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #718096;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .input-section {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: #f7fafc;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #4299e1;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        input[type="text"]::placeholder {
+            color: #a0aec0;
+        }
+
+        button {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(66, 153, 225, 0.5);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .output-section {
+            margin-top: 24px;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .output-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .status {
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        .status.idle {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .status.loading {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+
+        .status.success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .status.error {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+
+        .scrolled-text {
+            width: 100%;
+            min-height: 400px;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+            color: #2d3748;
+            background: #f7fafc;
+            resize: vertical;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .scrolled-text:focus {
+            outline: none;
+            border-color: #4299e1;
+            background: #ffffff;
+        }
+
+        .example {
+            margin-top: 32px;
+            padding: 16px;
+            background: #edf2f7;
+            border-radius: 8px;
+            border-left: 4px solid #4299e1;
+        }
+
+        .example-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 8px;
+        }
+
+        .example-text {
+            font-size: 12px;
+            color: #718096;
+            font-family: 'Courier New', monospace;
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .input-wrapper {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .scrolled-text {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GitHub PR 信息获取工具</h1>
+        <p class="subtitle">输入 GitHub 仓库地址，获取 Open 状态的 Pull Requests 信息</p>
+
+        <div class="input-section">
+            <label for="repoUrl">GitHub 仓库地址</label>
+            <div class="input-wrapper">
+                <input 
+                    type="text" 
+                    id="repoUrl" 
+                    placeholder="例如: https://github.com/owner/repo" 
+                    autocomplete="off"
+                >
+                <button id="fetchBtn" onclick="fetchPRs()">获取 PR 信息</button>
+            </div>
+        </div>
+
+        <div class="output-section">
+            <div class="output-header">
+                <span class="output-title">获取结果</span>
+                <span id="status" class="status idle">等待输入</span>
+            </div>
+            <textarea 
+                id="outputText" 
+                class="scrolled-text" 
+                readonly 
+                placeholder="PR 信息将显示在这里..."
+            ></textarea>
+        </div>
+
+        <div class="example">
+            <div class="example-title">使用示例</div>
+            <div class="example-text">输入: https://github.com/microsoft/vscode</div>
+            <div class="example-text">输出将包含所有 Open 状态的 PR 标题、分支名称和 PR 网址</div>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(type, text) {
+            const statusEl = document.getElementById('status');
+            statusEl.className = `status ${type}`;
+            statusEl.textContent = text;
+        }
+
+        function showOutput(text) {
+            const outputEl = document.getElementById('outputText');
+            outputEl.value = text;
+        }
+
+        function parseRepoUrl(url) {
+            // 匹配 GitHub 仓库 URL 格式
+            const regex = /github\.com\/([^\/]+)\/([^\/\s#]+)/i;
+            const match = url.match(regex);
+            
+            if (match) {
+                return {
+                    owner: match[1],
+                    repo: match[2]
+                };
+            }
+            return null;
+        }
+
+        async function fetchPRs() {
+            const urlInput = document.getElementById('repoUrl');
+            const fetchBtn = document.getElementById('fetchBtn');
+            const repoUrl = urlInput.value.trim();
+
+            if (!repoUrl) {
+                showStatus('error', '请输入仓库地址');
+                showOutput('错误: 请输入 GitHub 仓库地址');
+                return;
+            }
+
+            const repoInfo = parseRepoUrl(repoUrl);
+            if (!repoInfo) {
+                showStatus('error', '地址格式错误');
+                showOutput('错误: 请输入有效的 GitHub 仓库地址\n\n示例: https://github.com/owner/repo');
+                return;
+            }
+
+            showStatus('loading', '获取中...');
+            showOutput('正在获取 PR 信息...');
+            fetchBtn.disabled = true;
+
+            try {
+                // 使用 GitHub API 获取 Open PRs
+                const apiUrl = `https://api.github.com/repos/${repoInfo.owner}/${repoInfo.repo}/pulls?state=open`;
+                
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('仓库不存在');
+                    } else if (response.status === 403) {
+                        throw new Error('API 访问受限，请稍后重试');
+                    } else {
+                        throw new Error(`获取失败: ${response.status}`);
+                    }
+                }
+
+                const prs = await response.json();
+
+                if (prs.length === 0) {
+                    showStatus('success', '完成');
+                    showOutput('未找到 Open 状态的 Pull Requests');
+                } else {
+                    let output = `共找到 ${prs.length} 个 Open 状态的 Pull Requests:\n\n`;
+                    
+                    prs.forEach((pr, index) => {
+                        output += `${index + 1}. 标题: ${pr.title}\n`;
+                        output += `   分支: ${pr.head.ref} -> ${pr.base.ref}\n`;
+                        output += `   网址: ${pr.html_url}\n\n`;
+                    });
+
+                    showStatus('success', `完成 (${prs.length} 个)`);
+                    showOutput(output);
+                }
+
+            } catch (error) {
+                showStatus('error', '获取失败');
+                showOutput(`错误: ${error.message}\n\n请检查仓库地址是否正确，或稍后重试。`);
+            } finally {
+                fetchBtn.disabled = false;
+            }
+        }
+
+        // 支持 Enter 键触发
+        document.getElementById('repoUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                fetchPRs();
+            }
+        });
+    </script>
+</body>
+</html>
