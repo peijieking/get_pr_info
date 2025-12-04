@@ -1,0 +1,16 @@
+{
+  "name": "github-pr-fetcher",
+  "version": "1.0.0",
+  "description": "GitHub Pull Requests 获取工具",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx http-server -p 46637 -c-1",
+    "build": "if not exist build mkdir build && copy index.html build/"
+  },
+  "keywords": ["github", "pr", "pull-requests"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
