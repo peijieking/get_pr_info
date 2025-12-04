@@ -1,0 +1,28 @@
+{
+  "name": "seed-coder_trae_09",
+  "version": "1.0.0",
+  "description": "实现从 github 获取 pull requests 信息的网页应用。\r # 要求\r 包含一个输入框,让我输入git hub repo的地址\r 一个按钮,点击后可以开始执行获取\r 一个scrolledtext,用于显示获取后的消息\r 获取的消息包含 pr标题,分支名称,pr网址\r 只获取open状态的pr信息",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "npx playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peijieking/get_pr_info.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/peijieking/get_pr_info/issues"
+  },
+  "homepage": "https://github.com/peijieking/get_pr_info#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "vite": "^7.2.6"
+  }
+}
