@@ -1,0 +1,13 @@
+{
+  "name": "github-pr-fetcher",
+  "version": "1.0.0",
+  "description": "A web application to fetch pull requests information from GitHub",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["github", "pull-requests", "web-application"],
+  "author": "",
+  "license": "MIT"
+}
